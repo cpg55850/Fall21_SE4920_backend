@@ -1,57 +1,37 @@
 package com.example.todobackend2.todo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TodoService {
-    private static List<Todo> todos = new ArrayList<>();
-    private static int idCounter = 0;
+    @Autowired
+    private TodoRepository todoRepository;
 
-    static {
-        todos.add(new Todo(++idCounter, "Charlie", "do a thing", new Date(), false));
-        todos.add(new Todo(++idCounter, "Charlie", "do a thing2", new Date(), false));
-        todos.add(new Todo(++idCounter, "Charlie", "do a thing3", new Date(), true));
+    public List<Todo> getAllTodos(String username) {
+        return todoRepository.findByUsername(username);
     }
 
-    public List<Todo> findAll() {
-        return todos;
+    public Todo getTodo(long id) {
+        return todoRepository.findById(id).get();
     }
 
-    public Todo save(Todo todo) {
-        if(todo.getId() == -1 || todo.getId() == 0) {
-            todo.setId(++idCounter);
-            todos.add(todo);
-        } else {
-            deleteById(todo.getId());
-            todos.add(todo);
-        }
-
-        return todo;
+    public void addTodo(Todo todo) {
+        todoRepository.save(todo);
     }
 
-    public Todo deleteById(long id) {
-        Todo todo = findById(id);
-
-        if(todo == null) return null;
-
-        if(todos.remove(todo)){
-            return todo;
-        }
-
-        return null;
+    public void updateTodo(long id, Todo todo) {
+        todoRepository.save(todo);
     }
 
-    public Todo findById(long id) {
-        for(Todo todo : todos) {
-            if(todo.getId() == id) {
-                return todo;
-            }
-        }
-
-        return null;
+    public void deleteTodo(long id) {
+        todoRepository.deleteById(id);
     }
+
+
 }
